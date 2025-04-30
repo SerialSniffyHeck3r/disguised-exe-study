@@ -82,6 +82,7 @@ Instead of being a 64-bit kernel-mode driver (PE32+ with a DriverEntry), this fi
 ### Code Layout in IDA
 Loading the file into IDA showed me what I needed:
 
+- First of all, IDA reported this file as a Windows PE executable file.
 - No IRP handler table (no IRP_MJ_CREATE, IRP_MJ_DEVICE_CONTROL, etc.)
 - No DriverEntry—the symbol just didn’t exist.
 - But there was a main, and it included console-like logic, argument parsing, and even logging.
