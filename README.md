@@ -39,18 +39,13 @@ This was about understanding how an application **hid the real control mechanism
 ---
 
 
-
-
-
-
----
-
 ## Implementation Details & Screenshots
 
 ### 1. **First Approach & Static Analysis Failures**
 
 This game had following structures:
-(1.PNG)
+![Reversing Screenshot](Reversing1/1.jpg)
+
 
 there was some kind of anti-tamper mechanism that is supposed to display following warning message when one run 'game.exe' directly by accessing the game folder.
 (2.JPG)
@@ -87,6 +82,7 @@ So I did what any curious engineer would do:
 And just like that, the game launched. Like magic. 
 
 ---
+## Technical Details
 
 ### 🔍 PE Header Summary
 
