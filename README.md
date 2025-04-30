@@ -37,7 +37,15 @@ This wasn’t just about playing an old game.
 This was about understanding how an application **hid the real control mechanism** behind a misleading extension and subtle process orchestration.
 
 ---
-## What I Did
+
+
+
+
+
+
+---
+
+## Implementation Details & Screenshots
 
 ### 1. **First Approach & Static Analysis Failures**
 
@@ -58,6 +66,8 @@ Different approach was required, as I was sure this method will NOT work. main .
 While running the game with originally provided game launcher software, I noticed a `.sys` file—**GOSYSINF.SYS**—was **always resident in memory** whenever the game was running. 
 In addition, This .sys file constantly utilizes 10-40% of CPU processing power, like it's some kind of active process. That felt… off.
 
+Once I confirmed that the .sys file was not a traditional driver, I wanted to dig deeper into how exactly it controlled the execution flow of the game.
+
 ### 3. **IDA to the Rescue**
 I loaded the `.sys` into IDA, expecting to see typical driver code (DriverEntry, IRP handlers, etc).  
 Instead, I found:
@@ -76,30 +86,33 @@ So I did what any curious engineer would do:
 
 And just like that, the game launched. Like magic. 
 
----
 
-## Implementation Details & Screenshots
+### 🔍 PE Header Summary
 
-Once I confirmed that the .sys file was not a traditional driver, I wanted to dig deeper into how exactly it controlled the execution flow of the game.
+Upon analyzing the binary header, several unusual properties surfaced:
 
-### PE Header Inspection
+(4.JPG)
 
-The first thing that screamed “this is suspicious” was the PE header.
-Instead of being a 64-bit kernel-mode driver (PE32+ with a DriverEntry), this file had:
+- **Format**: PE32 for 80386 (user-mode), not PE32+ for kernel-mode
+- **Application Type**: `Executable 32bit`, not a driver
+- **PDB Path**: Revealed a Korean local directory structure, indicating this was compiled as a standard EXE
+- **Sections**: Minimal layout (`.text` only), no kernel-specific segments like `.INIT`, `.reloc`, etc.
+- **Time Stamp**: Someday on 2007. Clearly this launcher software wasn't there in 2007.
 
-- Format: PE32 (i.e., 32-bit user-mode application)
-- Entry point: standard mainCRTStartup
-- Import Table full of CRT functions like malloc, fopen, exit, strcpy
+This file had all the appearances of a driver from the outside (`.sys`),  
+but every structural fingerprint pointed to a **user-mode program masquerading as a driver**.
 
-### Code Layout in IDA
+
+### Checking code Layout / Dynamic Analysis in Debugger in IDA
 Loading the file into IDA showed me what I needed:
+
+(5.jpg)
 
 - First of all, IDA reported this file as a Windows PE executable file.
 - No IRP handler table (no IRP_MJ_CREATE, IRP_MJ_DEVICE_CONTROL, etc.)
 - No DriverEntry—the symbol just didn’t exist.
 - But there was a main, and it included console-like logic, argument parsing, and even logging.
 
-### Dynamic Analysis in Debugger
 I executed the .sys file in IDA's local Windows debugger (as if it were a normal .exe)—and suddenly:
 
 - The resolution changed (indicative of the game engine initializing, since this specific game that I ran is old one.)
@@ -118,12 +131,22 @@ I validated my hypothesis by checking Task Manager:
 At this point, my working theory was:
 
 - The launcher verifies payment/auth status online
-- If passed, it executes the .sys file as a stub
-- The .sys file initializes shared memory or sends IPC to Game.exe and this Game.exe checks this "OK" signal and proceeds to run
-- Or, that .sys file itself is in fact a Game.exe file but with different name and extension.
+- If passed, it executes the .sys file.
+- That .sys file itself is in fact a Game.exe file but with different name and extension.
 
 By running the .sys file independently, I literally 'short-circuited' this entire 'handshake' that a dedicated launcher software is supposed to do,
 .... and the game didn't know the difference. Of course the game will never know it - Because the launcher is not there!
+
+### Bonus Clue: PDB Path Left Behind
+
+During header inspection, I found a hardcoded PDB file reference. 
+
+This tells us:
+- The file was built in "Release" mode from certain project.
+- The original source directory was in Korean, likely on a developer's machine.
+- More importantly: **this is a user-mode application with full debug path**, not a low-level driver!!!
+
+All signs point to this file being a disguised executable, not a kernel module.
 
 ### Bonus Exploration
 I am planning to...
