@@ -116,7 +116,7 @@ but every structural fingerprint pointed to a **user-mode program masquerading a
 Loading the file into IDA showed me what I needed:
 
 
-![Reversing Screenshot](Reversing1/5.png)
+![Reversing Screenshot](Reversing1/5.jpg)
 
 
 - First of all, IDA reported this file as a Windows PE executable file.
