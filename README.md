@@ -40,9 +40,12 @@ This was about understanding how an application **hid the real control mechanism
 
 ## ⚠️ DISCLAIMER ⚠️
 This project was done purely out of **curiosity and for educational purposes**.
+
 **No software was modified, cracked, or redistributed**.
 
+
 **I do not endorse circumventing security mechanisms or tampering with proprietary software**.
+
 But I *do endorse* asking “Wait, what even is this file really doing?”
 
 ---
