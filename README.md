@@ -62,9 +62,64 @@ This was a **user-mode application disguised as a kernel driver.**
 So I did what any curious engineer would do:  
 👉 I ran it in IDA’s Windows debugger.
 
-And just like that, the game launched.
+And just like that, the game launched. Like magic. 
 
 ---
+
+## Implementation Details & Screenshots
+
+Once I confirmed that the .sys file was not a traditional driver, I wanted to dig deeper into how exactly it controlled the execution flow of the game.
+
+### PE Header Inspection
+
+The first thing that screamed “this is suspicious” was the PE header.
+Instead of being a 64-bit kernel-mode driver (PE32+ with a DriverEntry), this file had:
+
+- Format: PE32 (i.e., 32-bit user-mode application)
+- Entry point: standard mainCRTStartup
+- Import Table full of CRT functions like malloc, fopen, exit, strcpy
+
+### Code Layout in IDA
+Loading the file into IDA showed me what I needed:
+
+- No IRP handler table (no IRP_MJ_CREATE, IRP_MJ_DEVICE_CONTROL, etc.)
+- No DriverEntry—the symbol just didn’t exist.
+- But there was a main, and it included console-like logic, argument parsing, and even logging.
+
+### Dynamic Analysis in Debugger
+I executed the .sys file in IDA's local Windows debugger (as if it were a normal .exe)—and suddenly:
+
+- The resolution changed (indicative of the game engine initializing, since this specific game that I ran is old one.)
+- The game launched directly, without using, or even putting the original launcher in memory.
+- Of course no authentication or network communication was requested
+- No error popup or exit calls triggered
+
+### Memory Correlation
+
+I validated my hypothesis by checking Task Manager:
+- Launcher process spawned both Game.exe and this .sys file.
+- When launched without the .sys, the game immediately terminated, displaying an error message.
+- When I launched the .sys manually in debug mode, the game launched independently without any problem. It ran well, and I was even able to 'clear' the game. It was fun :)
+
+### Hypothesis
+At this point, my working theory was:
+
+- The launcher verifies payment/auth status online
+- If passed, it executes the .sys file as a stub
+- The .sys file initializes shared memory or sends IPC to Game.exe and this Game.exe checks this "OK" signal and proceeds to run
+- Or, that .sys file itself is in fact a Game.exe file but with different name and extension.
+
+By running the .sys file independently, I literally 'short-circuited' this entire 'handshake' that a dedicated launcher software is supposed to do,
+.... and the game didn't know the difference. Of course the game will never know it - Because the launcher is not there!
+
+### Bonus Exploration
+I am planning to...
+
+- Dump the full memory space of the .sys file during execution to trace exact interactions
+- Monitor for CreateProcess, OpenProcess, or SetEvent style behavior
+- Replace the .sys with a dummy process and simulate the handshake manually
+
+let’s be honest—this rabbit hole goes deeper. 🐇💻
 
 ## My Takeaways
 
@@ -86,12 +141,3 @@ But most importantly:
 - PE header inspection
 - Some brain-melting experience with obscure executable structures
 
----
-
-## 📸 Screenshots
-
-
-
-```md
-![IDA Screenshot](images/ida-disguised-sys.png)
-![Debugger Success](images/game-launch-success.png)
