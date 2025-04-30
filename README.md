@@ -8,7 +8,7 @@ So here's a story—not about cracking a game, but about curiosity, structure, a
 Somewhere out there, a *platform* started re-releasing classic games through a proprietary launcher.  
 The launcher wasn’t just a convenience layer—it acted as a **gatekeeper**.  
 Even though the actual game files were downloaded locally, **you couldn’t run the `.exe` directly**.  
-The launcher checked your credentials, something like some form of 'payment flag' of that specific account, and only then would it start the game.
+The launcher checked your credentials - something like some form of 'flag' - of that specific account, and only then would it start the game.
 
 Fair enough. But that’s where the mystery began.
 
@@ -39,12 +39,24 @@ This was about understanding how an application **hid the real control mechanism
 ---
 ## What I Did
 
-### 1. **Static Analysis Failures**
-I started with the main `.exe`, thinking I’d see a launch condition or some kind of anti-tamper logic.  
+### 1. **First Approach & Static Analysis Failures**
+
+This game had following structures:
+(1.PNG)
+
+there was some kind of anti-tamper mechanism that is supposed to display following warning message when one run 'game.exe' directly by accessing the game folder.
+(2.JPG)
+(Translation: The launcher is not running, or authentication failed.)
+
+This is why i started with that main `.exe`, thinking I’d see a launch condition or some kind of authentication logic.  
 What I got instead was a nightmare of obfuscated branches and no clear exit logic. Nothing suspicious jumped out, just a lot of chaos.
 
+Different approach was required, as I was sure this method will NOT work. main .exe file is extremely complex and I will not be able to get anything useful here.
+
 ### 2. **Memory Behavior Clue**
-While debugging the launcher, I noticed a `.sys` file—**GOSYSINF.SYS**—was **always resident in memory** whenever the game was running. That felt… off.
+(3.JPG)
+While running the game with originally provided game launcher software, I noticed a `.sys` file—**GOSYSINF.SYS**—was **always resident in memory** whenever the game was running. 
+In addition, This .sys file constantly utilizes 10-40% of CPU processing power, like it's some kind of active process. That felt… off.
 
 ### 3. **IDA to the Rescue**
 I loaded the `.sys` into IDA, expecting to see typical driver code (DriverEntry, IRP handlers, etc).  
