@@ -44,11 +44,16 @@ This was about understanding how an application **hid the real control mechanism
 ### 1. **First Approach & Static Analysis Failures**
 
 This game had following structures:
+
+
 ![Reversing Screenshot](Reversing1/1.png)
 
 
 there was some kind of anti-tamper mechanism that is supposed to display following warning message when one run 'game.exe' directly by accessing the game folder.
+
+
 ![Reversing Screenshot](Reversing1/2.png)
+
 
 (Translation: The launcher is not running, or authentication failed.)
 
@@ -58,7 +63,11 @@ What I got instead was a nightmare of obfuscated branches and no clear exit logi
 Different approach was required, as I was sure this method will NOT work. main .exe file is extremely complex and I will not be able to get anything useful here.
 
 ### 2. **Memory Behavior Clue**
+
+
 ![Reversing Screenshot](Reversing1/3.png)
+
+
 While running the game with originally provided game launcher software, I noticed a `.sys` file—**GOSYSINF.SYS**—was **always resident in memory** whenever the game was running. 
 In addition, This .sys file constantly utilizes 10-40% of CPU processing power, like it's some kind of active process. That felt… off.
 
@@ -89,7 +98,9 @@ And just like that, the game launched. Like magic.
 
 Upon analyzing the binary header, several unusual properties surfaced:
 
+
 ![Reversing Screenshot](Reversing1/4.png)
+
 
 - **Format**: PE32 for 80386 (user-mode), not PE32+ for kernel-mode
 - **Application Type**: `Executable 32bit`, not a driver
@@ -104,7 +115,9 @@ but every structural fingerprint pointed to a **user-mode program masquerading a
 ### Checking code Layout / Dynamic Analysis in Debugger in IDA
 Loading the file into IDA showed me what I needed:
 
+
 ![Reversing Screenshot](Reversing1/5.png)
+
 
 - First of all, IDA reported this file as a Windows PE executable file.
 - No IRP handler table (no IRP_MJ_CREATE, IRP_MJ_DEVICE_CONTROL, etc.)
