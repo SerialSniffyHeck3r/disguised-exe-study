@@ -1,18 +1,18 @@
 
-# 🕵️‍♂️ Reverse-Engineering a Disguised Executable: When `.sys` Files Wear Costumes
+# Reverse-Engineering a Disguised Executable: When `.sys` Files Wear Costumes
 
-## 🗂️ Background & Motivation
+## Background & Motivation
 
 So here's a story—not about cracking a game, but about curiosity, structure, and an old game from a forgotten era.
 
 Somewhere out there, a *platform* started re-releasing classic games through a proprietary launcher.  
 The launcher wasn’t just a convenience layer—it acted as a **gatekeeper**.  
 Even though the actual game files were downloaded locally, **you couldn’t run the `.exe` directly**.  
-The launcher checked your credentials, probably charged your account, and only then would it start the game.
+The launcher checked your credentials, something like some form of 'payment flag' of that specific account, and only then would it start the game.
 
 Fair enough. But that’s where the mystery began.
 
-Despite having the entire game folder, nothing would launch unless the launcher blessed it.  
+Despite having the entire game file structure which looked exactly same as what the original game disc had, nothing would launch unless the launcher blessed it.  
 Being a curious engineer (and a 4th-year embedded systems major), I decided to ask:
 
 > **“Why can’t I run something that’s already on my machine?”**  
@@ -29,15 +29,15 @@ This repository documents my analysis of a `.sys` file that turned out to be **n
 but rather a fully executable PE file, responsible for authentication triggers and game launch flow.  
 
 - It was always present in memory during launcher operation
-- It didn’t contain any driver structures like `DriverEntry` or `IRP_MJ_XXX`
-- It was packed with CRT functions like `malloc`, `exit`, and `fprintf`
-- Running it in a debugger… launched the game. Like magic.
+- It didn’t contain any driver structures like `DriverEntry` or `IRP_MJ_XXX`, which are what most driver files have.
+- Instead, It was packed with CRT functions like `malloc`, `exit`, and `fprintf`
+- Running this SYS file in a debugger… launched the game. Like magic.
 
 This wasn’t just about playing an old game.  
 This was about understanding how an application **hid the real control mechanism** behind a misleading extension and subtle process orchestration.
 
 ---
-## 🧠 What I Did
+## What I Did
 
 ### 1. **Static Analysis Failures**
 I started with the main `.exe`, thinking I’d see a launch condition or some kind of anti-tamper logic.  
@@ -66,25 +66,25 @@ And just like that, the game launched.
 
 ---
 
-## 🧩 My Takeaways
+## My Takeaways
 
 - Not all `.sys` files are drivers.
 - Not all security mechanisms are real security.
 - Launchers sometimes exist purely to add drama.
 
 But most importantly:
-> If you’re debugging a brick wall, check what’s running in memory.  
+> If you’re debugging a brick wall, make sure to check what’s running in memory.  
 > That shady little side-process might be the real puppet master.
 
 ---
 
-## ⚙️ Tools Used
+## Tools Used
 
-- 🧠 IDA Pro
-- 🧪 x64dbg
-- 👀 Task Manager
-- 🔍 PE header inspection
-- 📚 Some brain-melting experience with obscure executable structures
+- IDA Pro
+- x64dbg
+- Task Manager
+- PE header inspection
+- Some brain-melting experience with obscure executable structures
 
 ---
 
