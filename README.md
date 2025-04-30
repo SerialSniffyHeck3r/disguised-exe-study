@@ -86,6 +86,7 @@ So I did what any curious engineer would do:
 
 And just like that, the game launched. Like magic. 
 
+---
 
 ### 🔍 PE Header Summary
 
@@ -137,6 +138,8 @@ At this point, my working theory was:
 By running the .sys file independently, I literally 'short-circuited' this entire 'handshake' that a dedicated launcher software is supposed to do,
 .... and the game didn't know the difference. Of course the game will never know it - Because the launcher is not there!
 
+
+
 ### Bonus Clue: PDB Path Left Behind
 
 During header inspection, I found a hardcoded PDB file reference. 
@@ -148,14 +151,9 @@ This tells us:
 
 All signs point to this file being a disguised executable, not a kernel module.
 
-### Bonus Exploration
-I am planning to...
+---
 
-- Dump the full memory space of the .sys file during execution to trace exact interactions
-- Monitor for CreateProcess, OpenProcess, or SetEvent style behavior
-- Replace the .sys with a dummy process and simulate the handshake manually
 
-let’s be honest—this rabbit hole goes deeper. 🐇💻
 
 ## My Takeaways
 
@@ -166,6 +164,15 @@ let’s be honest—this rabbit hole goes deeper. 🐇💻
 But most importantly:
 > If you’re debugging a brick wall, make sure to check what’s running in memory.  
 > That shady little side-process might be the real puppet master.
+
+### More exploration
+I am planning to...
+
+- Dump the full memory space of the .sys file during execution to trace exact interactions
+- Monitor for CreateProcess, OpenProcess, or SetEvent style behavior
+- Replace the .sys with a dummy process and simulate the handshake manually
+
+let’s be honest—this rabbit hole goes deeper. 🐇💻
 
 ---
 
