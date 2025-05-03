@@ -46,7 +46,7 @@ This project was done purely out of **curiosity and for educational purposes**.
 
 **I do not endorse circumventing security mechanisms or tampering with proprietary software**.
 
-But I *do endorse* asking “Wait, what even is this file really doing?”
+But yeah, What I only *do endorse* is, asking “Wait, what even is this file really doing?” types of curiousity - which is good!
 
 ---
 
