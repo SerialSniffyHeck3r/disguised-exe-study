@@ -23,7 +23,7 @@ well, let’s just say it was **wearing a costume**.
 
 ---
 
-## 🎯 What This Project Is
+## What This Project Is
 
 This repository documents my analysis of a `.sys` file that turned out to be **not a driver**,  
 but rather a fully executable PE file, responsible for authentication triggers and game launch flow.  
@@ -38,7 +38,7 @@ This was about understanding how an application **hid the real control mechanism
 
 ---
 
-## ⚠️ DISCLAIMER ⚠️
+## DISCLAIMER ⚠️
 This project was done purely out of **curiosity and for educational purposes**.
 
 **No software was modified, cracked, or redistributed**.
@@ -97,15 +97,14 @@ Let me repeat: this wasn’t a driver.
 This was a **user-mode application disguised as a kernel driver.**
 
 ### 4. **The Big Reveal**
-So I did what any curious engineer would do:  
-👉 I ran it in IDA’s Windows debugger.
+So I did what any curious engineer would do: I ran it in IDA’s Windows debugger.
 
 And just like that, the game launched. Like magic. 
 
 ---
 ## Technical Details
 
-### 🔍 PE Header Summary
+### PE Header Summary
 
 Upon analyzing the binary header, several unusual properties surfaced:
 
@@ -187,13 +186,10 @@ But most importantly:
 > That shady little side-process might be the real puppet master.
 
 ### More exploration
-I am planning to...
 
 - Dump the full memory space of the .sys file during execution to trace exact interactions
 - Monitor for CreateProcess, OpenProcess, or SetEvent style behavior
 - Replace the .sys with a dummy process and simulate the handshake manually
-
-let’s be honest—this rabbit hole goes deeper. 🐇💻
 
 ---
 
