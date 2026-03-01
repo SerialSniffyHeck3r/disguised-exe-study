@@ -1,6 +1,18 @@
 
 # Reverse-Engineering a Disguised Executable: When `.sys` Files Wear Costumes
 
+## 윈도우 exe 파일을 가장한 sys 파일을 사용한 보안 구조 리버스 엔지니어링: 한국어 설명
+
+모 플랫폼이 독자적인 '게임 런쳐 소프트웨어' 를 이용해 고전 게임을 재배포하는 점을 발견했습니다. 
+이 런쳐는 어디까지나 '편의를 위해 추가된 계층' 정도의 느낌이었고, 실제 게임 파일은 독자적인 구조의 폴더 구조 안에 그대로 포함되어 있었고 런쳐가 이를 실행하는 구조였습니다.
+그러나, 폴더에 접근하여 해당 게임 파일을 찾아서 exe 파일을 실행해도, 게임을 실행할 수 없엇고 런쳐 화면으로 넘어갔습니다.
+
+이 런쳐는 계정 정보를 요구하며, 네트워크에 접속하여 계정 정보를 확인한 후 일종의 플래그를 올린 뒤 해당 런쳐 소프트웨어가 다른 exe를 실행함으로써 게임을 실행하는 구조로 추론하였고, 
+실제 고전 게임 CD에 포함된 파일 구조를 그대로 포함하고 있었음에도 불구하고 exe 파일이 실행되지 않는 이유에 대한 분석을 실행해 보고자 해당 연구를 진행했습니다.
+
+자세한 설명은 아래에 첨부합니다. 
+
+
 ## Background & Motivation
 
 So here's a story—not about cracking a game, but about curiosity, structure, and an old game from a forgotten era.
@@ -38,15 +50,17 @@ This was about understanding how an application **hid the real control mechanism
 
 ---
 
-## DISCLAIMER ⚠️
+## DISCLAIMER
 This project was done purely out of **curiosity and for educational purposes**.
-
 **No software was modified, cracked, or redistributed**.
 
-
 **I do not endorse circumventing security mechanisms or tampering with proprietary software**.
-
 But yeah, What I only *do endorse* is, asking “Wait, what even is this file really doing?” types of curiousity - which is good!
+
+## 면책 조항:
+
+이 프로젝트는 개인적인 호기심과 교육적 목적에 의해 진행되었으며, 어떠한 소프트웨어도 동의 없이 크랙되거나 재배포되지 않았음.
+유료 소프트웨어를 수정하여 재배포하는 것은 불법이며, 본 프로젝트는 어디까지나 보안 연구를 목적으로 함. 
 
 ---
 
